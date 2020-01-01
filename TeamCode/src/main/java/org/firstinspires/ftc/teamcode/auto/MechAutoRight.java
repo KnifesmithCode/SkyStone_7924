@@ -27,17 +27,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 
 /**
  * This file illustrates the concept of driving a path based on encoder counts.
@@ -66,23 +63,38 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name = "Basic", group = "Auto")
+@Autonomous(name = "Mech Auto", group = "Auto")
 //@Disabled
-public class BasicAuto extends LinearOpMode {
+public class MechAutoRight extends LinearOpMode {
+
+    // Member names
+    // Drive motors
+    private String LEFT_MOTOR_NAME_FRONT = "leftDriveFront";
+    private String LEFT_MOTOR_NAME_REAR = "leftDriveRear";
+    private String RIGHT_MOTOR_NAME_FRONT = "rightDriveFront";
+    private String RIGHT_MOTOR_NAME_REAR = "rightDriveRear";
+    // Arm motor
+    private String ARM_MOTOR_NAME = "armMotor";
 
     /* Declare OpMode members. */
-    private ElapsedTime runtime = new ElapsedTime();
-    DcMotor leftDrive = null;
-    DcMotor rightDrive = null;
-    DcMotor armMotor = null;
+    // Drive Motors
+    private DcMotor leftDriveFront = null;
+    private DcMotor leftDriveRear = null;
+    private DcMotor rightDriveFront = null;
+    private DcMotor rightDriveRear = null;
+    // Arm
+    private DcMotor armMotor = null;
     private Servo leftArmServo = null;
     private Servo rightArmServo = null;
 
     @Override
     public void runOpMode() {
-        leftDrive = hardwareMap.get(DcMotor.class, "leftDrive");
-        rightDrive = hardwareMap.get(DcMotor.class, "rightDrive");
-        armMotor = hardwareMap.get(DcMotor.class, "armMotor");
+        leftDriveFront = hardwareMap.get(DcMotor.class, LEFT_MOTOR_NAME_FRONT);
+        leftDriveRear = hardwareMap.get(DcMotor.class, LEFT_MOTOR_NAME_REAR);
+        rightDriveFront = hardwareMap.get(DcMotor.class, RIGHT_MOTOR_NAME_FRONT);
+        rightDriveRear = hardwareMap.get(DcMotor.class, RIGHT_MOTOR_NAME_REAR);
+
+        armMotor = hardwareMap.get(DcMotor.class, ARM_MOTOR_NAME);
         leftArmServo = hardwareMap.get(Servo.class, "leftArmServo");
         rightArmServo = hardwareMap.get(Servo.class, "rightArmServo");
 
@@ -90,13 +102,18 @@ public class BasicAuto extends LinearOpMode {
         telemetry.addData("Status", "Resetting Encoders");
         telemetry.update();
 
-        leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftDriveFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftDriveRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightDriveFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightDriveRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightDrive.setDirection(DcMotor.Direction.FORWARD);
-        armMotor.setDirection(DcMotor.Direction.FORWARD);
+        leftDriveFront.setDirection(DcMotor.Direction.FORWARD);
+        leftDriveRear.setDirection(DcMotor.Direction.FORWARD);
+        rightDriveFront.setDirection(DcMotor.Direction.REVERSE);
+        rightDriveRear.setDirection(DcMotor.Direction.REVERSE);
+
+        armMotor.setDirection(DcMotor.Direction.REVERSE);
 
         leftArmServo.setDirection(Servo.Direction.FORWARD);
         rightArmServo.setDirection(Servo.Direction.REVERSE);
@@ -105,36 +122,77 @@ public class BasicAuto extends LinearOpMode {
         waitForStart();
 
         armMotor.setTargetPosition(840);
+
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        telemetry.addData("MODE", "");
+
         armMotor.setPower(0.5d);
+        telemetry.addData("POWER", "");
 
-        while(armMotor.isBusy()) {
-            telemetry.addData("Arm", String.valueOf(armMotor.getCurrentPosition()));
-        }
+        sleep(2000);
 
+        telemetry.addData("SERVOS", "");
         setServos(1.0d);
         sleep(500);
         armMotor.setPower(0d);
+        telemetry.addData("POWER 0", "");
+
+        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        telemetry.addData("STOP", "");
 
         // AndyMark encoders have 1680 encoder counts per rotation
-        leftDrive.setTargetPosition(2520);
-        rightDrive.setTargetPosition(2520);
+        leftDriveFront.setTargetPosition(1680);
+        leftDriveRear.setTargetPosition(1680);
+        rightDriveFront.setTargetPosition(1680);
+        rightDriveRear.setTargetPosition(1680);
 
-        leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftDriveFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftDriveRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightDriveFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightDriveRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
 
-        leftDrive.setPower(0.4d);
-        rightDrive.setPower(0.4d);
+        leftDriveFront.setPower(0.4d);
+        leftDriveRear.setPower(0.4d);
+        rightDriveFront.setPower(0.4d);
+        rightDriveRear.setPower(0.4d);
 
-        while(leftDrive.isBusy() && rightDrive.isBusy()) {
-            telemetry.addData("Drive", "left " + leftDrive.getCurrentPosition() + " right " +
-                    rightDrive.getCurrentPosition());
+        while(leftDriveFront.isBusy() && rightDriveFront.isBusy() &&
+                leftDriveRear.isBusy() && rightDriveRear.isBusy()) {
+            telemetry.addData("Drive", "left " + leftDriveFront.getCurrentPosition() + " right " +
+                    rightDriveFront.getCurrentPosition());
         }
 
-        leftDrive.setPower(0d);
-        rightDrive.setPower(0d);
+        leftDriveFront.setPower(0d);
+        leftDriveRear.setPower(0d);
+        rightDriveFront.setPower(0d);
+        rightDriveRear.setPower(0d);
 
-        leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftDriveFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftDriveRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightDriveFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightDriveRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftDriveFront.setTargetPosition(1680);
+        leftDriveRear.setTargetPosition(-1680);
+        rightDriveFront.setTargetPosition(-1680);
+        rightDriveRear.setTargetPosition(1680);
+
+        leftDriveFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftDriveRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightDriveFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightDriveRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
+
+        leftDriveFront.setPower(0.4d);
+        leftDriveRear.setPower(0.4d);
+        rightDriveFront.setPower(0.4d);
+        rightDriveRear.setPower(0.4d);
+
+        while(leftDriveFront.isBusy() && rightDriveFront.isBusy() &&
+                leftDriveRear.isBusy() && rightDriveRear.isBusy()) {
+            telemetry.addData("Drive", "left " + leftDriveFront.getCurrentPosition() + " right " +
+                    rightDriveFront.getCurrentPosition());
+        }
 
         telemetry.addData("Path", "Complete");
         telemetry.update();

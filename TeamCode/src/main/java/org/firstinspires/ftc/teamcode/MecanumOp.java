@@ -31,10 +31,9 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.hardware.tilerunner.TilerunnerTeleOP;
 
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -53,28 +52,53 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @TeleOp(name = "Mecanum OpMode", group = "Iterative Opmode")
 //@Disabled
 public class MecanumOp extends OpMode {
-    // Declare motor names
+    private TilerunnerTeleOP bot = new TilerunnerTeleOP();
+    /*
+    // Declare names
+    // Drive Motors
     private String LEFT_MOTOR_NAME_FRONT = "leftDriveFront";
     private String LEFT_MOTOR_NAME_REAR = "leftDriveRear";
     private String RIGHT_MOTOR_NAME_FRONT = "rightDriveFront";
     private String RIGHT_MOTOR_NAME_REAR = "rightDriveRear";
+    private String ARM_MOTOR_NAME = "armMotor";
+    private String LEFT_ARM_SERVO_NAME = "leftArmServo";
+    private String RIGHT_ARM_SERVO_NAME = "rightArmServo";
+    private String CENTER_ARM_SERVO_NAME = "centerArmServo";
+    private String LEFT_LATCH_SERVO_NAME = "leftLatchServo";
+    private String RIGHT_LATCH_SERVO_NAME = "rightLatchServo";
 
     // Declare OpMode members.
-    private ElapsedTime runtime = new ElapsedTime();
+    // Drive Motors
     private DcMotor leftDriveFront = null;
     private DcMotor leftDriveRear = null;
     private DcMotor rightDriveFront = null;
     private DcMotor rightDriveRear = null;
+    // Arm
+    private DcMotor armMotor = null;
+    private Servo leftArmServo = null;
+    private Servo rightArmServo = null;
+    private Servo centerArmServo = null;
+    // Latch
+    private Servo leftLatchServo;
+    private Servo rightLatchServo;
+*/
 
-    boolean mecanumDrive = false;
+    //Keep track of runtime
+    private ElapsedTime runtime = new ElapsedTime();
+
+    // Have option for both single and two people
+    private boolean singlePlayer = false;
 
     /*
      * Code to run ONCE when the driver hits INIT
      */
     @Override
     public void init() {
+        // Should be only call to telemetry
         telemetry.addData("Status", "Initializing...");
 
+        bot.init(hardwareMap, telemetry);
+/*
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
@@ -83,13 +107,32 @@ public class MecanumOp extends OpMode {
         rightDriveFront = hardwareMap.get(DcMotor.class, RIGHT_MOTOR_NAME_FRONT);
         rightDriveRear = hardwareMap.get(DcMotor.class, RIGHT_MOTOR_NAME_REAR);
 
+        armMotor = hardwareMap.get(DcMotor.class, ARM_MOTOR_NAME);
+        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        leftArmServo = hardwareMap.get(Servo.class, LEFT_ARM_SERVO_NAME);
+        rightArmServo = hardwareMap.get(Servo.class, RIGHT_ARM_SERVO_NAME);
+        centerArmServo = hardwareMap.get(Servo.class, CENTER_ARM_SERVO_NAME);
+
+        leftLatchServo = hardwareMap.get(Servo.class, LEFT_LATCH_SERVO_NAME);
+        rightLatchServo = hardwareMap.get(Servo.class, RIGHT_LATCH_SERVO_NAME);
+
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         leftDriveFront.setDirection(DcMotor.Direction.FORWARD);
-        leftDriveRear.setDirection(DcMotor.Direction.REVERSE);
-        rightDriveFront.setDirection(DcMotor.Direction.FORWARD);
+        leftDriveRear.setDirection(DcMotor.Direction.FORWARD);
+        rightDriveFront.setDirection(DcMotor.Direction.REVERSE);
         rightDriveRear.setDirection(DcMotor.Direction.REVERSE);
 
+        armMotor.setDirection(DcMotor.Direction.REVERSE);
+
+        leftArmServo.setDirection(Servo.Direction.FORWARD);
+        rightArmServo.setDirection(Servo.Direction.REVERSE);
+        centerArmServo.setDirection(Servo.Direction.FORWARD);
+
+        leftLatchServo.setDirection(Servo.Direction.FORWARD);
+        rightLatchServo.setDirection(Servo.Direction.REVERSE);
+*/
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
     }
@@ -99,6 +142,12 @@ public class MecanumOp extends OpMode {
      */
     @Override
     public void init_loop() {
+        if (gamepad1.a) {
+            singlePlayer = true;
+        } else if (gamepad1.b) {
+            singlePlayer = false;
+        }
+        telemetry.addData("Single Driver", String.valueOf(singlePlayer));
     }
 
     /*
@@ -115,48 +164,115 @@ public class MecanumOp extends OpMode {
     @Override
     public void loop() {
         // Setup a variable for each drive wheel to save power level for telemetry
-        double leftPower;
-        double rightPower;
+        double leftFrontPower;
+        double leftRearPower;
+        double rightFrontPower;
+        double rightRearPower;
 
-        if(gamepad1.a) {
-            mecanumDrive = true;
-        } else if (gamepad1.b) {
-            mecanumDrive = false;
-        }
+        double armPower;
 
-        // Choose to drive using either Tank Mode, or POV Mode
-        // Comment out the method that's not used.  The default below is POV.
+        double clawPosition = (bot.leftArmServo.getPosition() + bot.rightArmServo.getPosition()) / 2;
+        double centerClawPosition = bot.centerArmServo.getPosition();
 
-        // POV Mode uses left stick to go forward, and right stick to turn.
-        // - This uses basic math to combine motions and is easier to drive straight.
-        // double drive = -gamepad1.left_stick_y;
-        // double turn = gamepad1.right_stick_x;
-        // leftPower = Range.clip(drive + turn, -1.0, 1.0);
-        // rightPower = Range.clip(drive - turn, -1.0, 1.0);
+        double latchPosition = (bot.leftLatchServo.getPosition() + bot.rightLatchServo.getPosition()) / 2;
 
-        // Tank Mode uses one stick to control each wheel.
-        // - This requires no math, but it is hard to drive forward slowly and keep straight.
-        if(!mecanumDrive) {
-            leftPower = -gamepad1.left_stick_y;
-            rightPower = -gamepad1.right_stick_y;
-
-            leftDriveFront.setPower(leftPower);
-            leftDriveRear.setPower(leftPower);
-            rightDriveFront.setPower(rightPower);
-            rightDriveRear.setPower(rightPower);
+        // Utilizing a modified POV mode for mecanum transport
+        // The left stick moves in eight directions, while the right stick is used to turn
+        // Turning is preferred over linear motion
+        // If turning is occurring, no other movement will occur
+        if (gamepad1.right_stick_x == 0 && gamepad1.right_stick_y == 0) {
+            leftFrontPower = -gamepad1.left_stick_y + gamepad1.left_stick_x;
+            leftRearPower = -gamepad1.left_stick_y - gamepad1.left_stick_x;
+            rightFrontPower = leftRearPower;
+            rightRearPower = leftFrontPower;
         } else {
-            leftPower = -gamepad1.left_stick_x;
-            rightPower = -gamepad1.right_stick_x;
-
-            leftDriveFront.setPower(leftPower);
-            leftDriveRear.setPower(-leftPower);
-            rightDriveFront.setPower(rightPower);
-            rightDriveRear.setPower(-rightPower);
+            leftFrontPower = gamepad1.right_stick_x;
+            leftRearPower = leftFrontPower;
+            rightFrontPower = -gamepad1.right_stick_x;
+            rightRearPower = rightFrontPower;
         }
+
+        if (singlePlayer) {
+            armPower = gamepad1.right_trigger - (gamepad1.left_trigger / 4);
+        } else {
+            armPower = gamepad2.right_trigger - (gamepad2.left_trigger / 4);
+        }
+
+        if (singlePlayer) {
+            // Grabber
+            if (gamepad1.a) {
+                clawPosition = 1.0d;
+            } else if (gamepad1.x) {
+                clawPosition = 0.75d;
+            } else if (gamepad1.b) {
+                clawPosition = 0d;
+            } else if (gamepad1.y) {
+                clawPosition = -0.5d;
+            }
+
+            // Center arm
+            if (gamepad1.dpad_down) {
+                centerClawPosition = 0.45d;
+            } else if (gamepad1.dpad_up) {
+                centerClawPosition = 0d;
+            }
+
+            // Latch
+            if (gamepad1.right_bumper) {
+                latchPosition = 0.55d;
+            } else if (gamepad1.left_bumper) {
+                latchPosition = 0d;
+            }
+        } else {
+            // Grabber
+            if (gamepad2.a) {
+                clawPosition = 1.0d;
+            } else if (gamepad2.x) {
+                clawPosition = 0.75d;
+            } else if (gamepad2.b) {
+                clawPosition = 0d;
+            } else if (gamepad2.y) {
+                clawPosition = -0.5d;
+            }
+
+            // Center arm
+            if (gamepad2.dpad_down) {
+                centerClawPosition = 0.45d;
+            } else if (gamepad2.dpad_up) {
+                centerClawPosition = 0d;
+            }
+
+            // Latch
+            if (gamepad2.right_bumper) {
+                latchPosition = 0.55d;
+            } else if (gamepad2.left_bumper) {
+                latchPosition = 0d;
+            }
+        }
+
+        bot.leftDriveFront.setPower(leftFrontPower);
+        bot.leftDriveRear.setPower(leftRearPower);
+        bot.rightDriveFront.setPower(rightFrontPower);
+        bot.rightDriveRear.setPower(rightRearPower);
+        bot.armMotor.setPower(armPower);
+
+        // Set claw servo positions
+        bot.setClawServos(clawPosition);
+        bot.centerArmServo.setPosition(centerClawPosition);
+
+        // Set latch servo positions
+        bot.setLatchServos(latchPosition);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+        telemetry.addData("Claw", "pos (%.2f)", clawPosition);
+        telemetry.addData("Latch", "pos (%.2f)", latchPosition);
+        telemetry.addData("Front Motors",
+                "L: (%.2f) R: (%.2f)",
+                leftFrontPower, rightFrontPower);
+        telemetry.addData("Rear Motors",
+                "L: (%.2f) R: (%.2f)",
+                leftRearPower, rightRearPower);
     }
 
     /*
@@ -165,5 +281,4 @@ public class MecanumOp extends OpMode {
     @Override
     public void stop() {
     }
-
 }

@@ -99,6 +99,8 @@ public class PipelineStageSwitchingExample extends LinearOpMode {
         List<MatOfPoint> inverseContoursList = new ArrayList<>();
         int numContoursFound;
 
+        int thresh = 80;
+
         enum Stage {
             YCbCr_CHAN2,
             THRESHOLD,
@@ -145,7 +147,8 @@ public class PipelineStageSwitchingExample extends LinearOpMode {
             numContoursFound = contoursList.size();
 
             Imgproc.cvtColor(input, grayscaleMat, Imgproc.COLOR_RGB2GRAY);
-            Imgproc.threshold(grayscaleMat, grayscaleInvertMat, 60, 255, Imgproc.THRESH_BINARY_INV);
+
+            Imgproc.threshold(grayscaleMat, grayscaleInvertMat, 20, 255, Imgproc.THRESH_BINARY_INV);
             Imgproc.findContours(grayscaleInvertMat, inverseContoursList, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
             input.copyTo(customContourMat);
             //grayscaleMat.copyTo(inverseThresholdMat);
@@ -167,22 +170,21 @@ public class PipelineStageSwitchingExample extends LinearOpMode {
                     Rect rect = new Rect((int) topLeft.x, (int) topLeft.y, width, height);
                     yellowRects.add(rect);
 
-                    Imgproc.rectangle(customContourMat, new Rect((int) topLeft.x, (int) topLeft.y, width, height), new Scalar(0, 255, 0), 4);
-                    Imgproc.circle(customContourMat, center, 5, new Scalar(255, 0, 0));
+                    //Imgproc.rectangle(customContourMat, new Rect((int) topLeft.x, (int) topLeft.y, width, height), new Scalar(0, 255, 0), 4);
+                    //Imgproc.circle(customContourMat, center, 5, new Scalar(255, 0, 0));
 
 
                 }
             }
 
-            Log.d("Yellow Rects", yellowRects.toString());
+            //Log.d("Yellow Rects", yellowRects.toString());
 
             for (MatOfPoint mp : inverseContoursList) {
                 double area = Imgproc.contourArea(mp);
-                if (area > 5000d && area < 50000d) {
-                    Point topLeft = computeTopLeft(mp);
-                    Point bottomRight = computeBottomRight(mp);
-                    Point center = computeCenter(topLeft, bottomRight);
-
+                Point topLeft = computeTopLeft(mp);
+                Point bottomRight = computeBottomRight(mp);
+                Point center = computeCenter(topLeft, bottomRight);
+                if (area > 5000d && area < 50000d && center.y > 400 && center.y < 500) {
                     int width = (int) (bottomRight.x - topLeft.x);
                     int height = (int) (bottomRight.y - topLeft.y);
 
@@ -191,15 +193,23 @@ public class PipelineStageSwitchingExample extends LinearOpMode {
 
                     Imgproc.circle(customContourMat, center, 3, new Scalar(0, 255, 0), 2, 8);
                     Imgproc.rectangle(customContourMat, rect, new Scalar(0, 255, 255), 2, 8);
+
+                    // Left approx 90
+                    // Center appox 200-230
+                    // Right approx 290-330
+                    Log.d("Found", "X: " + center.x);
                 }
             }
 
-            Log.d("Black Rects", blackRects.toString());
+            //Log.d("Black Rects", blackRects.toString());
+            for(int i = 0; i < blackRects.size(); i++) {
+
+            }
 
             for (int i = 1; i < yellowRects.size(); i++) {
                 if (((yellowRects.get(i).area() - yellowRects.get(i - 1).area()) / yellowRects.get(i).area()) < 0.025d) {
-                    Imgproc.rectangle(customContourMat, yellowRects.get(i - 1), new Scalar(0, 0, 0), 5, 8);
-                    Imgproc.rectangle(customContourMat, yellowRects.get(i), new Scalar(0, 0, 0), 5, 8);
+                    //Imgproc.rectangle(customContourMat, yellowRects.get(i - 1), new Scalar(0, 0, 0), 5, 8);
+                    //Imgproc.rectangle(customContourMat, yellowRects.get(i), new Scalar(0, 0, 0), 5, 8);
                 }
             }
 
@@ -238,6 +248,10 @@ public class PipelineStageSwitchingExample extends LinearOpMode {
 
         public int getNumContoursFound() {
             return numContoursFound;
+        }
+
+        public void setThreshold(int thresh) {
+            this.thresh = thresh;
         }
 
         public int[] getPixelInt(double[] pixel) {

@@ -27,8 +27,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.teleop;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -49,17 +50,29 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name = "Servo Test", group = "Iterative Opmode")
-//@Disabled
-public class ServoTestOp extends OpMode {
+@TeleOp(name = "Basic: Iterative OpMode", group = "Iterative Opmode")
+@Disabled
+@SuppressWarnings("FieldCanBeLocal")
+public class BasicOpMode_Iterative extends OpMode {
     // Declare motor names
+    private String LEFT_MOTOR_NAME = "leftDrive";
+    private String RIGHT_MOTOR_NAME = "rightDrive";
+    private String ARM_MOTOR_NAME = "armMotor";
     private String LEFT_ARM_SERVO_NAME = "leftArmServo";
     private String RIGHT_ARM_SERVO_NAME = "rightArmServo";
+    private String CENTER_ARM_SERVO_NAME = "centerArmServo";
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
+    private DcMotor leftDrive = null;
+    private DcMotor rightDrive = null;
+    private DcMotor armMotor = null;
     private Servo leftArmServo = null;
     private Servo rightArmServo = null;
+    private Servo centerArmServo = null;
+
+    // Have option for both single and two people
+    private boolean singlePlayer = false;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -68,11 +81,29 @@ public class ServoTestOp extends OpMode {
     public void init() {
         telemetry.addData("Status", "Initializing...");
 
+        // Initialize the hardware variables. Note that the strings used here as parameters
+        // to 'get' must correspond to the names assigned during the robot configuration
+        // step (using the FTC Robot Controller app on the phone).
+        leftDrive = hardwareMap.get(DcMotor.class, LEFT_MOTOR_NAME);
+        rightDrive = hardwareMap.get(DcMotor.class, RIGHT_MOTOR_NAME);
+        armMotor = hardwareMap.get(DcMotor.class, ARM_MOTOR_NAME);
+        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         leftArmServo = hardwareMap.get(Servo.class, LEFT_ARM_SERVO_NAME);
         rightArmServo = hardwareMap.get(Servo.class, RIGHT_ARM_SERVO_NAME);
+        centerArmServo = hardwareMap.get(Servo.class, CENTER_ARM_SERVO_NAME);
+
+        // Most robots need the motor on one side to be reversed to drive forward
+        // Reverse the motor that runs backwards when connected directly to the battery
+        leftDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightDrive.setDirection(DcMotor.Direction.FORWARD);
+        armMotor.setDirection(DcMotor.Direction.REVERSE);
 
         leftArmServo.setDirection(Servo.Direction.FORWARD);
         rightArmServo.setDirection(Servo.Direction.REVERSE);
+        centerArmServo.setDirection(Servo.Direction.FORWARD);
+
+        // TODO: Figure out servo directions for the latch
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -83,6 +114,12 @@ public class ServoTestOp extends OpMode {
      */
     @Override
     public void init_loop() {
+        if (gamepad1.a) {
+            singlePlayer = true;
+        } else if (gamepad1.b) {
+            singlePlayer = false;
+        }
+        telemetry.addData("Single Driver", String.valueOf(singlePlayer));
     }
 
     /*
@@ -98,17 +135,81 @@ public class ServoTestOp extends OpMode {
      */
     @Override
     public void loop() {
-        double servoPosition = (leftArmServo.getPosition() + rightArmServo.getPosition()) / 2;
+        // Setup a variable for each drive wheel to save power level for telemetry
+        double leftPower;
+        double rightPower;
+        double armPower;
 
-        if(gamepad1.dpad_up) {
-            servoPosition += 0.1d;
-        } else if (gamepad1.dpad_down) {
-            servoPosition -= 0.1d;
+        double servoPosition = (leftArmServo.getPosition() + rightArmServo.getPosition()) / 2;
+        double centerServoPosition = centerArmServo.getPosition();
+
+        // Choose to drive using either Tank Mode, or POV Mode
+        // Comment out the method that's not used.  The default below is POV.
+
+        // POV Mode uses left stick to go forward, and right stick to turn.
+        // - This uses basic math to combine motions and is easier to drive straight.
+        // double drive = -gamepad1.left_stick_y;
+        // double turn = gamepad1.right_stick_x;
+        // leftPower = Range.clip(drive + turn, -1.0, 1.0);
+        // rightPower = Range.clip(drive - turn, -1.0, 1.0);
+
+        // Tank Mode uses one stick to control each wheel.
+        // - This requires no math, but it is hard to drive forward slowly and keep straight.
+        leftPower = -gamepad1.left_stick_y;
+        rightPower = -gamepad1.right_stick_y;
+        if (singlePlayer) {
+            armPower = gamepad1.right_trigger - (gamepad1.left_trigger / 4);
+        } else {
+            armPower = gamepad2.right_trigger - (gamepad2.left_trigger / 4);
         }
+
+        if (singlePlayer) {
+            // Grabber
+            if (gamepad1.a) {
+                servoPosition = 1.0d;
+            } else if (gamepad1.x) {
+                servoPosition = 0.75d;
+            } else if (gamepad1.b) {
+                servoPosition = 0d;
+            }
+
+            // Center arm
+            if (gamepad1.dpad_down) {
+                centerServoPosition = 0.45d;
+            } else if (gamepad1.dpad_up) {
+                centerServoPosition = 0d;
+            }
+        } else {
+            // Grabber
+            if (gamepad2.a) {
+                servoPosition = 1.0d;
+            } else if (gamepad2.x) {
+                servoPosition = 0.75d;
+            } else if (gamepad2.b) {
+                servoPosition = 0d;
+            }
+
+            // Center arm
+            if (gamepad2.dpad_down) {
+                centerServoPosition = 0.45d;
+            } else if (gamepad2.dpad_up) {
+                centerServoPosition = 0d;
+            }
+        }
+
+        // Send calculated power to wheels
+        leftDrive.setPower(leftPower);
+        rightDrive.setPower(rightPower);
+        armMotor.setPower(armPower);
+
+        // Set servo positions
+        setServos(servoPosition);
+        centerArmServo.setPosition(centerServoPosition);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Servos", "pos (%.2f)", servoPosition);
+        telemetry.addData("Motors", "left (%.2f), right (%.2f), arm (%.2f)", leftPower, rightPower, armPower);
     }
 
     /*

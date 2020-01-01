@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -45,7 +45,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Servo channel:  Servo to open left claw:  "leftArmServo"
  * Servo channel:  Servo to open right claw: "rightArmServo"
  */
-public class HardwareOldBot {
+public class OldBot {
     // Declare motor names
     private String LEFT_MOTOR_NAME = "leftDrive";
     private String RIGHT_MOTOR_NAME = "rightDrive";
@@ -65,7 +65,7 @@ public class HardwareOldBot {
     private ElapsedTime runtime = new ElapsedTime();
 
     /* Constructor */
-    public HardwareOldBot() {
+    public OldBot() {
 
     }
 
