@@ -13,6 +13,7 @@ public class TilerunnerAuto extends TilerunnerTeleOP {
         leftDriveRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightDriveFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightDriveRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         leftDriveFront.setTargetPosition(-counts);
         leftDriveRear.setTargetPosition(counts);
@@ -47,6 +48,7 @@ public class TilerunnerAuto extends TilerunnerTeleOP {
         leftDriveRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightDriveFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightDriveRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         leftDriveFront.setTargetPosition(counts);
         leftDriveRear.setTargetPosition(-counts);
@@ -82,6 +84,7 @@ public class TilerunnerAuto extends TilerunnerTeleOP {
         leftDriveRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightDriveFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightDriveRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         leftDriveFront.setTargetPosition(-counts);
         leftDriveRear.setTargetPosition(-counts);
@@ -117,6 +120,7 @@ public class TilerunnerAuto extends TilerunnerTeleOP {
         leftDriveRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightDriveFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightDriveRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         leftDriveFront.setTargetPosition(counts);
         leftDriveRear.setTargetPosition(counts);

@@ -102,11 +102,14 @@ public class NewMechAuto extends LinearOpMode {
         bot.leftDriveRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bot.rightDriveFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bot.rightDriveRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bot.armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         bot.leftDriveFront.setDirection(DcMotor.Direction.FORWARD);
         bot.leftDriveRear.setDirection(DcMotor.Direction.FORWARD);
         bot.rightDriveFront.setDirection(DcMotor.Direction.REVERSE);
         bot.rightDriveRear.setDirection(DcMotor.Direction.REVERSE);
+
+        bot.armMotor.setDirection(DcMotor.Direction.REVERSE);
 
         bot.leftArmServo.setDirection(Servo.Direction.FORWARD);
         bot.rightArmServo.setDirection(Servo.Direction.REVERSE);
@@ -123,19 +126,19 @@ public class NewMechAuto extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        //bot.armMotor.setTargetPosition(840);
+        bot.armMotor.setTargetPosition(840);
 
-        //bot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        bot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        //bot.armMotor.setPower(0.5d);
+        bot.armMotor.setPower(0.5d);
 
-        //sleep(2000);
+        sleep(2000);
 
-        //bot.setClawServos(1.0d);
+        bot.setClawServos(1.0d);
         sleep(500);
-        //bot.armMotor.setPower(0d);
+        bot.armMotor.setPower(0d);
 
-        //bot.armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bot.armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // AndyMark encoders have 1680 encoder counts per rotation
 
