@@ -37,24 +37,22 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
- * Defines the hardware for our old robot
- * (the one with four straight wheels and front omni-wheels)
+ * Defines the hardware for our mecanum drive robot
  * <p>
- * Motor channel:  Left  drive motor:        "leftDrive"
- * Motor channel:  Right drive motor:        "rightDrive"
- * Motor channel:  Arm drive motor:          "armMotor"
- * Servo channel:  Servo to open left claw:  "leftArmServo"
- * Servo channel:  Servo to open right claw: "rightArmServo"
  */
 public class Tilerunner {
     // Declare all member names
     // Drive motors
-    private String LEFT_MOTOR_NAME_FRONT = "leftDriveFront";
-    private String LEFT_MOTOR_NAME_REAR = "leftDriveRear";
-    private String RIGHT_MOTOR_NAME_FRONT = "rightDriveFront";
-    private String RIGHT_MOTOR_NAME_REAR = "rightDriveRear";
-    // Arm motor
-    private String ARM_MOTOR_NAME = "armMotor";
+    private String LEFT_FRONT_DRIVE_MOTOR_NAME = "leftDriveFront";
+    private String LEFT_REAR_DRIVE_MOTOR_NAME = "leftDriveRear";
+    private String RIGHT_FRONT_DRIVE_MOTOR_NAME = "rightDriveFront";
+    private String RIGHT_REAR_DRIVE_MOTOR_NAME = "rightDriveRear";
+    // Forward-back movement motors
+    private String LEFT_HORIZONTAL_MOTOR_NAME = "leftHorizontalMotor";
+    private String RIGHT_HORIZONTAL_MOTOR_NAME = "rightHorizontalMotor";
+    // Up-down movement motor
+    private String VERTICAL_MOTOR_NAME = "verticalMotor";
+
     // Claw servos
     private String LEFT_ARM_SERVO_NAME = "leftArmServo";
     private String RIGHT_ARM_SERVO_NAME = "rightArmServo";
@@ -63,6 +61,7 @@ public class Tilerunner {
     private String LEFT_LATCH_SERVO_NAME = "leftLatchServo";
     private String RIGHT_LATCH_SERVO_NAME = "rightLatchServo";
 
+
     // Declare OpMode members
     private ElapsedTime runtime = new ElapsedTime();
     // Drive Motors
@@ -70,8 +69,13 @@ public class Tilerunner {
     public DcMotor leftDriveRear;
     public DcMotor rightDriveFront;
     public DcMotor rightDriveRear;
-    // Arm
-    public DcMotor armMotor;
+    // Horizontal movement motors
+    public DcMotor leftHorizontalMotor;
+    public DcMotor rightHorizontalMotor;
+    // Vertical movement motors
+    public DcMotor verticalMotor;
+
+    // Claw servos
     public Servo leftArmServo;
     public Servo rightArmServo;
     public Servo centerArmServo;
@@ -94,13 +98,17 @@ public class Tilerunner {
         telemetry = mTelemetry;
 
         // Get references to drive motors
-        leftDriveFront = hardwareMap.get(DcMotor.class, LEFT_MOTOR_NAME_FRONT);
-        leftDriveRear = hardwareMap.get(DcMotor.class, LEFT_MOTOR_NAME_REAR);
-        rightDriveFront = hardwareMap.get(DcMotor.class, RIGHT_MOTOR_NAME_FRONT);
-        rightDriveRear = hardwareMap.get(DcMotor.class, RIGHT_MOTOR_NAME_REAR);
+        leftDriveFront = hardwareMap.get(DcMotor.class, LEFT_FRONT_DRIVE_MOTOR_NAME);
+        leftDriveRear = hardwareMap.get(DcMotor.class, LEFT_REAR_DRIVE_MOTOR_NAME);
+        rightDriveFront = hardwareMap.get(DcMotor.class, RIGHT_FRONT_DRIVE_MOTOR_NAME);
+        rightDriveRear = hardwareMap.get(DcMotor.class, RIGHT_REAR_DRIVE_MOTOR_NAME);
 
-        // Get reference to arm motor
-        armMotor = hardwareMap.get(DcMotor.class, ARM_MOTOR_NAME);
+        // Get references to horizontal movement motors
+        leftHorizontalMotor = hardwareMap.get(DcMotor.class, LEFT_HORIZONTAL_MOTOR_NAME);
+        rightHorizontalMotor = hardwareMap.get(DcMotor.class, RIGHT_HORIZONTAL_MOTOR_NAME);
+
+        // Get reference to vertical movement motor
+        verticalMotor = hardwareMap.get(DcMotor.class, VERTICAL_MOTOR_NAME);
 
         // Get reference to arm servos
         leftArmServo = hardwareMap.get(Servo.class, LEFT_ARM_SERVO_NAME);
@@ -117,8 +125,12 @@ public class Tilerunner {
         rightDriveFront.setDirection(DcMotor.Direction.REVERSE);
         rightDriveRear.setDirection(DcMotor.Direction.REVERSE);
 
-        // Setup arm motor
-        armMotor.setDirection(DcMotor.Direction.REVERSE);
+        // Setup horizontal movement motors
+        leftHorizontalMotor.setDirection(DcMotor.Direction.REVERSE);
+        rightHorizontalMotor.setDirection(DcMotor.Direction.FORWARD);
+
+        // Setup vertical movement motors
+        verticalMotor.setDirection(DcMotor.Direction.REVERSE);
 
         // Setup arm servos
         leftArmServo.setDirection(Servo.Direction.FORWARD);
