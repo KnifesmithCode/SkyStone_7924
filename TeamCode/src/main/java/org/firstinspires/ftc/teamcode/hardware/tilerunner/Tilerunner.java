@@ -142,4 +142,3 @@ public class Tilerunner {
         rightLatchServo.setDirection(Servo.Direction.REVERSE);
     }
 }
-
