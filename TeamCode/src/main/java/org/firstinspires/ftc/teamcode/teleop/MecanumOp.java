@@ -111,7 +111,10 @@ public class MecanumOp extends OpMode {
         double clawPosition = (bot.leftArmServo.getPosition() + bot.rightArmServo.getPosition()) / 2;
         double centerClawPosition = bot.centerArmServo.getPosition();
 
-        double latchPosition = (bot.leftLatchServo.getPosition() + bot.rightLatchServo.getPosition()) / 2;
+        // Old method
+        // Had a bug where, due to the set offset, the servos would creep toward position 1.0
+        //double latchPosition = (bot.leftLatchServo.getPosition() + bot.rightLatchServo.getPosition()) / 2;
+        double latchPosition = bot.leftLatchServo.getPosition();
 
         //#region DRIVE CONTROL
         // Utilizing a modified POV mode for mecanum transport
@@ -133,9 +136,9 @@ public class MecanumOp extends OpMode {
 
         //#region VERTICAL SLIDE CONTROL
         if (singlePlayer) {
-            verticalPower = gamepad1.right_trigger - (gamepad1.left_trigger / 4);
+            verticalPower = gamepad1.right_trigger - (gamepad1.left_trigger / 2);
         } else {
-            verticalPower = gamepad2.right_trigger - (gamepad2.left_trigger / 4);
+            verticalPower = gamepad2.right_trigger - (gamepad2.left_trigger / 2);
         }
         //#endregion
 
@@ -164,7 +167,7 @@ public class MecanumOp extends OpMode {
 
             // Center arm
             if (gamepad1.dpad_down) {
-                centerClawPosition = 0.45;
+                centerClawPosition = 0.5;
             } else if (gamepad1.dpad_up) {
                 centerClawPosition = 0;
             }
@@ -182,7 +185,7 @@ public class MecanumOp extends OpMode {
 
             // Center arm
             if (gamepad2.dpad_down) {
-                centerClawPosition = 0.45;
+                centerClawPosition = 0.5;
             } else if (gamepad2.dpad_up) {
                 centerClawPosition = 0;
             }
@@ -212,7 +215,8 @@ public class MecanumOp extends OpMode {
         bot.rightDriveRear.setPower(rightRearPower);
 
         // Set vertical motion power
-        bot.verticalMotor.setPower(verticalPower);
+        bot.leftVerticalMotor.setPower(verticalPower);
+        bot.rightVerticalMotor.setPower(verticalPower);
 
         // Set horizontal motion power
         bot.leftHorizontalMotor.setPower(horizontalPower);
