@@ -27,12 +27,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.auto;
+package org.firstinspires.ftc.teamcode.auto.oldauto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * This file illustrates the concept of driving a path based on encoder counts.
@@ -63,7 +65,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @Autonomous(name = "Mech Auto", group = "Auto")
 //@Disabled
-public class MechAutoLeft extends LinearOpMode {
+public class MechAutoRight extends LinearOpMode {
 
     // Member names
     // Drive motors
@@ -171,10 +173,10 @@ public class MechAutoLeft extends LinearOpMode {
         rightDriveRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftDriveFront.setTargetPosition(-1680);
-        leftDriveRear.setTargetPosition(1680);
-        rightDriveFront.setTargetPosition(1680);
-        rightDriveRear.setTargetPosition(-1680);
+        leftDriveFront.setTargetPosition(1680);
+        leftDriveRear.setTargetPosition(-1680);
+        rightDriveFront.setTargetPosition(-1680);
+        rightDriveRear.setTargetPosition(1680);
 
         leftDriveFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftDriveRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
