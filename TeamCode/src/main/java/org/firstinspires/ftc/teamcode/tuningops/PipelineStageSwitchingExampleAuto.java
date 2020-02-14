@@ -19,14 +19,14 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.auto.oldauto;
+package org.firstinspires.ftc.teamcode.tuningops;
 
 import android.util.Log;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.InternalCameraExample;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -47,6 +47,8 @@ import java.util.List;
  * callback to switch which stage of a pipeline is rendered to the viewport for debugging
  * purposes. We also show how to get data from the pipeline to your OpMode.
  */
+
+@Disabled
 @TeleOp
 public class PipelineStageSwitchingExampleAuto extends LinearOpMode {
     OpenCvInternalCamera phoneCam;
