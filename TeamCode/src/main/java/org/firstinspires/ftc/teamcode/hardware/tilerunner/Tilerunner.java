@@ -50,16 +50,18 @@ public class Tilerunner {
     // Forward-back movement motors
     private String LEFT_HORIZONTAL_MOTOR_NAME = "leftHorizontalMotor";
     private String RIGHT_HORIZONTAL_MOTOR_NAME = "rightHorizontalMotor";
-    // Up-down movement motor
-    private String VERTICAL_MOTOR_NAME = "verticalMotor";
+    // Up-down movement motors
+    private String LEFT_VERTICAL_MOTOR_NAME = "leftVerticalMotor";
+    private String RIGHT_VERTICAL_MOTOR_NAME = "rightVerticalMotor";
 
     // Claw servos
     private String LEFT_ARM_SERVO_NAME = "leftArmServo";
     private String RIGHT_ARM_SERVO_NAME = "rightArmServo";
-    private String CENTER_ARM_SERVO_NAME = "centerArmServo";
     // Latch servos
     private String LEFT_LATCH_SERVO_NAME = "leftLatchServo";
     private String RIGHT_LATCH_SERVO_NAME = "rightLatchServo";
+    // Capstone servo
+    private String CAPSTONE_SERVO_NAME = "capstoneServo";
 
 
     // Declare OpMode members
@@ -73,15 +75,17 @@ public class Tilerunner {
     public DcMotor leftHorizontalMotor;
     public DcMotor rightHorizontalMotor;
     // Vertical movement motors
-    public DcMotor verticalMotor;
+    public DcMotor leftVerticalMotor;
+    public DcMotor rightVerticalMotor;
 
     // Claw servos
     public Servo leftArmServo;
     public Servo rightArmServo;
-    public Servo centerArmServo;
-    // Latch
+    // Latch servos
     public Servo leftLatchServo;
     public Servo rightLatchServo;
+    // Capstone servo
+    public Servo capstoneServo;
 
     // Store the hardware map
     private HardwareMap hardwareMap;
@@ -108,16 +112,19 @@ public class Tilerunner {
         rightHorizontalMotor = hardwareMap.get(DcMotor.class, RIGHT_HORIZONTAL_MOTOR_NAME);
 
         // Get reference to vertical movement motor
-        verticalMotor = hardwareMap.get(DcMotor.class, VERTICAL_MOTOR_NAME);
+        leftVerticalMotor = hardwareMap.get(DcMotor.class, LEFT_VERTICAL_MOTOR_NAME);
+        rightVerticalMotor = hardwareMap.get(DcMotor.class, RIGHT_VERTICAL_MOTOR_NAME);
 
         // Get reference to arm servos
         leftArmServo = hardwareMap.get(Servo.class, LEFT_ARM_SERVO_NAME);
         rightArmServo = hardwareMap.get(Servo.class, RIGHT_ARM_SERVO_NAME);
-        centerArmServo = hardwareMap.get(Servo.class, CENTER_ARM_SERVO_NAME);
 
         // Get reference to latch servos
         leftLatchServo = hardwareMap.get(Servo.class, LEFT_LATCH_SERVO_NAME);
         rightLatchServo = hardwareMap.get(Servo.class, RIGHT_LATCH_SERVO_NAME);
+
+        // Get reference to capstone servo
+        capstoneServo = hardwareMap.get(Servo.class, CAPSTONE_SERVO_NAME);
 
         // Setup drive motors
         leftDriveFront.setDirection(DcMotor.Direction.FORWARD);
@@ -126,19 +133,24 @@ public class Tilerunner {
         rightDriveRear.setDirection(DcMotor.Direction.REVERSE);
 
         // Setup horizontal movement motors
-        leftHorizontalMotor.setDirection(DcMotor.Direction.REVERSE);
-        rightHorizontalMotor.setDirection(DcMotor.Direction.FORWARD);
+        leftHorizontalMotor.setDirection(DcMotor.Direction.FORWARD);
+        rightHorizontalMotor.setDirection(DcMotor.Direction.REVERSE);
 
         // Setup vertical movement motors
-        verticalMotor.setDirection(DcMotor.Direction.REVERSE);
+        leftVerticalMotor.setDirection(DcMotor.Direction.FORWARD);
+        rightVerticalMotor.setDirection(DcMotor.Direction.FORWARD);
+        leftVerticalMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightVerticalMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Setup arm servos
         leftArmServo.setDirection(Servo.Direction.FORWARD);
         rightArmServo.setDirection(Servo.Direction.REVERSE);
-        centerArmServo.setDirection(Servo.Direction.FORWARD);
 
-        //Setup latch servos
+        // Setup latch servos
         leftLatchServo.setDirection(Servo.Direction.FORWARD);
         rightLatchServo.setDirection(Servo.Direction.REVERSE);
+
+        // Setup capstone servo
+        capstoneServo.setDirection(Servo.Direction.FORWARD);
     }
 }
