@@ -109,12 +109,16 @@ public class MecanumOp extends OpMode {
         double verticalPower;
 
         double clawPosition = (bot.leftArmServo.getPosition() + bot.rightArmServo.getPosition()) / 2;
-        double centerClawPosition = bot.centerArmServo.getPosition();
 
         // Old method
         // Had a bug where, due to the set offset, the servos would creep toward position 1.0
         //double latchPosition = (bot.leftLatchServo.getPosition() + bot.rightLatchServo.getPosition()) / 2;
+
+        // New method
+        // Only uses the position of one servo, ignoring the offset and preventing creep
         double latchPosition = bot.leftLatchServo.getPosition();
+
+        double capstonePosition = bot.capstoneServo.getPosition();
 
         //#region DRIVE CONTROL
         // Utilizing a modified POV mode for mecanum transport
@@ -158,41 +162,27 @@ public class MecanumOp extends OpMode {
             if (gamepad1.a) {
                 clawPosition = 1.0;
             } else if (gamepad1.x) {
-                clawPosition = 0.75;
+                clawPosition = 0.45;
             } else if (gamepad1.b) {
                 clawPosition = 0;
             } else if (gamepad1.y) {
-                clawPosition = -0.5;
-            }
-
-            // Center arm
-            if (gamepad1.dpad_down) {
-                centerClawPosition = 0.5;
-            } else if (gamepad1.dpad_up) {
-                centerClawPosition = 0;
+                clawPosition = 0.65;
             }
         } else {
             // Grabber
             if (gamepad2.a) {
                 clawPosition = 1.0;
             } else if (gamepad2.x) {
-                clawPosition = 0.75;
+                clawPosition = 0.45;
             } else if (gamepad2.b) {
                 clawPosition = 0;
             } else if (gamepad2.y) {
-                clawPosition = -0.5;
-            }
-
-            // Center arm
-            if (gamepad2.dpad_down) {
-                centerClawPosition = 0.5;
-            } else if (gamepad2.dpad_up) {
-                centerClawPosition = 0;
+                clawPosition = 0.65;
             }
         }
         //#endregion
 
-        //#region LATCH
+        //#region LATCH CONTROL
         if(singlePlayer) {
             if (gamepad1.right_bumper) {
                 latchPosition = 0.55;
@@ -204,6 +194,22 @@ public class MecanumOp extends OpMode {
                 latchPosition = 0.55;
             } else if (gamepad2.left_bumper) {
                 latchPosition = 0;
+            }
+        }
+        //#endregion
+
+        //#region CAPSTONE CONTROL
+        if(singlePlayer) {
+            if (gamepad1.start) {
+                capstonePosition = 0.65;
+            } else if (gamepad1.back) {
+                capstonePosition = 0;
+            }
+        } else {
+            if (gamepad2.start) {
+                capstonePosition = 0.65;
+            } else if (gamepad2.back) {
+                capstonePosition = 0;
             }
         }
         //#endregion
@@ -224,16 +230,19 @@ public class MecanumOp extends OpMode {
 
         // Set claw servo positions
         bot.setClawServos(clawPosition);
-        bot.centerArmServo.setPosition(centerClawPosition);
 
         // Set latch servo positions
         bot.setLatchServos(latchPosition);
 
-        // Show the elapsed game time and wheel power.
+        // Set capstone servo position
+        bot.capstoneServo.setPosition(capstonePosition);
+
+        // Show the elapsed game time and other data
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Claw", "pos (%.2f)", clawPosition);
         telemetry.addData("Latch", "pos (%.2f)", latchPosition);
         telemetry.addData("Vertical", "(%.2f)", verticalPower);
+        telemetry.addData("Capstone", "pos (%.2f)", capstonePosition);
         telemetry.addData("Front Motors",
                 "L: (%.2f) R: (%.2f)",
                 leftFrontPower, rightFrontPower);
