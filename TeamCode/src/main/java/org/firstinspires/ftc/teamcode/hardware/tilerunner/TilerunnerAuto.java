@@ -24,10 +24,10 @@ public class TilerunnerAuto extends TilerunnerTeleOP {
         rightDriveFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightDriveRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
 
-        leftDriveFront.setPower(0.4d);
-        leftDriveRear.setPower(0.4d);
-        rightDriveFront.setPower(0.4d);
-        rightDriveRear.setPower(0.4d);
+        leftDriveFront.setPower(0.6d);
+        leftDriveRear.setPower(0.6d);
+        rightDriveFront.setPower(0.6d);
+        rightDriveRear.setPower(0.6d);
 
         while (leftDriveFront.isBusy() && rightDriveFront.isBusy() &&
                 leftDriveRear.isBusy() && rightDriveRear.isBusy()) {
@@ -58,10 +58,10 @@ public class TilerunnerAuto extends TilerunnerTeleOP {
         rightDriveFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightDriveRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
 
-        leftDriveFront.setPower(0.4d);
-        leftDriveRear.setPower(0.4d);
-        rightDriveFront.setPower(0.4d);
-        rightDriveRear.setPower(0.4d);
+        leftDriveFront.setPower(0.6d);
+        leftDriveRear.setPower(0.6d);
+        rightDriveFront.setPower(0.6d);
+        rightDriveRear.setPower(0.6d);
 
         while (leftDriveFront.isBusy() && rightDriveFront.isBusy() &&
                 leftDriveRear.isBusy() && rightDriveRear.isBusy()) {
@@ -93,10 +93,10 @@ public class TilerunnerAuto extends TilerunnerTeleOP {
         rightDriveFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightDriveRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
 
-        leftDriveFront.setPower(0.4d);
-        leftDriveRear.setPower(0.4d);
-        rightDriveFront.setPower(0.4d);
-        rightDriveRear.setPower(0.4d);
+        leftDriveFront.setPower(0.6d);
+        leftDriveRear.setPower(0.6d);
+        rightDriveFront.setPower(0.6d);
+        rightDriveRear.setPower(0.6d);
 
         while (leftDriveFront.isBusy() && rightDriveFront.isBusy() &&
                 leftDriveRear.isBusy() && rightDriveRear.isBusy()) {
@@ -128,10 +128,10 @@ public class TilerunnerAuto extends TilerunnerTeleOP {
         rightDriveFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightDriveRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
 
-        leftDriveFront.setPower(0.4d);
-        leftDriveRear.setPower(0.4d);
-        rightDriveFront.setPower(0.4d);
-        rightDriveRear.setPower(0.4d);
+        leftDriveFront.setPower(0.6d);
+        leftDriveRear.setPower(0.6d);
+        rightDriveFront.setPower(0.6d);
+        rightDriveRear.setPower(0.6d);
 
         while (leftDriveFront.isBusy() && rightDriveFront.isBusy() &&
                 leftDriveRear.isBusy() && rightDriveRear.isBusy()) {
@@ -139,5 +139,12 @@ public class TilerunnerAuto extends TilerunnerTeleOP {
                     rightDriveFront.getCurrentPosition());
             telemetry.update();
         }
+    }
+
+    public void resetEncoders() {
+        leftDriveFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftDriveRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightDriveFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightDriveRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 }
