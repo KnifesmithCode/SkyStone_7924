@@ -51,8 +51,8 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
         leftFront = hardwareMap.get(ExpansionHubMotor.class, "leftDriveFront");
         leftRear = hardwareMap.get(ExpansionHubMotor.class, "leftDriveRear");
-        rightRear = hardwareMap.get(ExpansionHubMotor.class, "rightDriveFront");
-        rightFront = hardwareMap.get(ExpansionHubMotor.class, "rightDriveRear");
+        rightRear = hardwareMap.get(ExpansionHubMotor.class, "rightDriveRear");
+        rightFront = hardwareMap.get(ExpansionHubMotor.class, "rightDriveFront");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
