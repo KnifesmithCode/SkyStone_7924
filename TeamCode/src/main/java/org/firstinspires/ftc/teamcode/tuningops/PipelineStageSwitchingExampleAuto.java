@@ -88,7 +88,7 @@ public class PipelineStageSwitchingExampleAuto extends LinearOpMode {
      * particularly useful during pipeline development. We also show how
      * to get data from the pipeline to your OpMode.
      */
-    static class StageSwitchingPipeline extends OpenCvPipeline {
+    public static class StageSwitchingPipeline extends OpenCvPipeline {
         Mat yCbCrChan2Mat = new Mat();
         Mat thresholdMat = new Mat();
         Mat grayscaleMat = new Mat();
@@ -102,7 +102,7 @@ public class PipelineStageSwitchingExampleAuto extends LinearOpMode {
 
         int thresh = 80;
 
-        enum Stage {
+        public enum Stage {
             YCbCr_CHAN2,
             THRESHOLD,
             CONTOURS_OVERLAYED_ON_FRAME,
